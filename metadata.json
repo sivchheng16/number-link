@@ -1,0 +1,5 @@
+{
+  "name": "Logic Link: Number Connect",
+  "description": "A computational thinking puzzle game where you connect matching numbers without crossing lines. Features multiple levels of increasing difficulty.",
+  "requestFramePermissions": []
+}
