@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, MouseEvent, TouchEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Trophy, RefreshCw, ChevronLeft, ChevronRight, Play, Info, Sparkles, Wand2 } from 'lucide-react';
+import { Trophy, RefreshCw, ChevronLeft, ChevronRight, Play, Info, Sparkles, Wand2, Settings2 } from 'lucide-react';
 import { LEVELS } from './levels';
 import { Point, Path, Level, Pair } from './types';
 import { THEMES } from './themes';
@@ -19,6 +19,8 @@ export default function App() {
   const currentLevel = customLevel || LEVELS[currentLevelIndex];
   const theme = THEMES[currentLevel.category] || THEMES['Starter Pack'];
   const boardRef = useRef<HTMLDivElement>(null);
+
+
 
   const vibrate = (pattern: number | number[]) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -39,16 +41,14 @@ export default function App() {
   }, [currentLevelIndex, customLevel]);
 
   const generateRandomLevel = () => {
-    // Pick a size based on current category or just random
     const sizes = [5, 6, 7, 7, 8];
     const categories = ['Starter Pack', 'The Grid Rises', 'Multi-Hue Master', 'Complex Conduits', 'The Flow Grandmaster'];
     const randomIdx = Math.floor(Math.random() * sizes.length);
     const size = sizes[randomIdx];
     const category = categories[randomIdx];
-    
-    // For random levels, we'll pick a reasonable number of pairs based on size
+
     const targetPairs = size + Math.floor(Math.random() * 2);
-    
+
     const newLevel = generateReverseLevel(999, size, category, Math.floor(Math.random() * 1000000), targetPairs);
     setCustomLevel(newLevel);
     vibrate(40);
@@ -60,56 +60,56 @@ export default function App() {
 
   const generateSmoothPath = (points: Point[]) => {
     if (points.length < 2) return "";
-    
+
     const radius = 0.35; // Rounding radius in grid units
     let d = `M ${points[0].x + 0.5} ${points[0].y + 0.5}`;
-    
+
     for (let i = 1; i < points.length - 1; i++) {
       const prev = points[i - 1];
       const curr = points[i];
       const next = points[i + 1];
-      
+
       const cx = curr.x + 0.5;
       const cy = curr.y + 0.5;
-      
+
       const dx1 = curr.x - prev.x;
       const dy1 = curr.y - prev.y;
       const dx2 = next.x - curr.x;
       const dy2 = next.y - curr.y;
-      
+
       // Check if direction changes (turn)
       if (dx1 !== dx2 || dy1 !== dy2) {
         const x1 = cx - dx1 * radius;
         const y1 = cy - dy1 * radius;
         const x2 = cx + dx2 * radius;
         const y2 = cy + dy2 * radius;
-        
+
         d += ` L ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
       } else {
         d += ` L ${cx} ${cy}`;
       }
     }
-    
+
     const last = points[points.length - 1];
     d += ` L ${last.x + 0.5} ${last.y + 0.5}`;
-    
+
     return d;
   };
 
   const getCellFromEvent = (e: MouseEvent | TouchEvent) => {
     if (!boardRef.current) return null;
     const rect = boardRef.current.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    
+    const clientX = 'touches' in e ? (e as any).touches[0].clientX : (e as any).clientX;
+    const clientY = 'touches' in e ? (e as any).touches[0].clientY : (e as any).clientY;
+
     const rawX = ((clientX - rect.left) / rect.width) * currentLevel.size;
     const rawY = ((clientY - rect.top) / rect.height) * currentLevel.size;
-    
-    const x = Math.floor(rawX);
-    const y = Math.floor(rawY);
-    
-    if (x >= 0 && x < currentLevel.size && y >= 0 && y < currentLevel.size) {
-      return { cell: { x, y }, raw: { x: rawX, y: rawY } };
+
+    const xCell = Math.floor(rawX);
+    const yCell = Math.floor(rawY);
+
+    if (xCell >= 0 && xCell < currentLevel.size && yCell >= 0 && yCell < currentLevel.size) {
+      return { cell: { x: xCell, y: yCell }, raw: { x: rawX, y: rawY } };
     }
     return null;
   };
@@ -127,8 +127,8 @@ export default function App() {
   };
 
   const getPairAt = (p: Point): Pair | undefined => {
-    return currentLevel.pairs.find(pair => 
-      (pair.start.x === p.x && pair.start.y === p.y) || 
+    return currentLevel.pairs.find(pair =>
+      (pair.start.x === p.x && pair.start.y === p.y) ||
       (pair.end.x === p.x && pair.end.y === p.y)
     );
   };
@@ -137,7 +137,7 @@ export default function App() {
     if (isLevelComplete) return;
 
     const pair = getPairAt(p);
-    
+
     // 1. Check if we clicked a number endpoint
     if (pair) {
       // If the path for this number is already complete and "locked", do nothing
@@ -181,10 +181,12 @@ export default function App() {
   };
 
   const handleMove = (p: Point, raw: { x: number, y: number }) => {
+
+
     if (!activePath || !isDragging || isLevelComplete) return;
 
     let lastPoint = activePath.points[activePath.points.length - 1];
-    
+
     // Check if it's the same point
     if (lastPoint.x === p.x && lastPoint.y === p.y) return;
 
@@ -217,12 +219,12 @@ export default function App() {
       } else {
         stepY = Math.sign(dy);
       }
-      
+
       currentX += stepX;
       currentY += stepY;
-      
+
       const nextPoint = { x: currentX, y: currentY };
-      
+
       // Check if we move back to the previous point in the path (undoing)
       const currentPoints = [...activePath.points, ...pointsToAdd];
       if (currentPoints.length > 1) {
@@ -256,11 +258,11 @@ export default function App() {
 
       pointsToAdd.push(nextPoint);
       vibrate(5);
-      
+
       // If we reached a goal, stop
       const pair = currentLevel.pairs.find(pr => pr.value === activePath.value)!;
-      if ((nextPoint.x === pair.start.x && nextPoint.y === pair.start.y) || 
-          (nextPoint.x === pair.end.x && nextPoint.y === pair.end.y)) {
+      if ((nextPoint.x === pair.start.x && nextPoint.y === pair.start.y) ||
+        (nextPoint.x === pair.end.x && nextPoint.y === pair.end.y)) {
         break;
       }
     }
@@ -284,8 +286,8 @@ export default function App() {
     const newPoints = [...activePath.points, ...pointsToAdd];
     const finalPoint = newPoints[newPoints.length - 1];
     const pair = currentLevel.pairs.find(pr => pr.value === activePath.value)!;
-    const isComplete = (finalPoint.x === pair.start.x && finalPoint.y === pair.start.y) || 
-                       (finalPoint.x === pair.end.x && finalPoint.y === pair.end.y);
+    const isComplete = (finalPoint.x === pair.start.x && finalPoint.y === pair.start.y) ||
+      (finalPoint.x === pair.end.x && finalPoint.y === pair.end.y);
 
     const updatedPath = {
       ...activePath,
@@ -294,7 +296,7 @@ export default function App() {
     };
 
     setActivePath(updatedPath);
-    
+
     if (isComplete) {
       setPaths(prev => [...prev.filter(path => path.value !== updatedPath.value), updatedPath]);
       setActivePath(null);
@@ -305,8 +307,6 @@ export default function App() {
 
   const handleEnd = () => {
     setIsDragging(false);
-    // Note: We do NOT set activePath to null here.
-    // This allows incomplete paths to remain visible until a new number is started.
   };
 
   useEffect(() => {
@@ -349,311 +349,338 @@ export default function App() {
     }
   };
 
+  const isLight = theme.containerBg.includes('stone-50') || theme.containerBg.includes('emerald-50') || theme.containerBg.includes('slate-50');
+
   return (
-    <div className={`min-h-screen ${theme.containerBg} text-slate-100 font-sans flex flex-col items-center p-4 md:p-8 transition-colors duration-1000`}>
-      {/* Header */}
-      <header className="w-full max-w-2xl flex justify-between items-center mb-8">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-600').replace('-500', '-600').replace('-300', '-500')} rounded-lg shadow-lg`}>
-            <Play className="w-6 h-6 fill-current" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Logic Link</h1>
-            <div className="flex items-center gap-1 opacity-60">
-              <Sparkles className="w-3 h-3" />
-              <span className="text-[10px] uppercase tracking-widest font-bold">{theme.name}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={generateRandomLevel}
-            className={`p-2 hover:${theme.uiBg} rounded-full transition-colors ${customLevel ? theme.accentColor : 'opacity-60'}`}
-            title="Generate Random Level"
-          >
-            <Wand2 className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={() => setShowInstructions(true)}
-            className={`p-2 hover:${theme.uiBg} rounded-full transition-colors opacity-60`}
-            title="How to play"
-          >
-            <Info className="w-5 h-5" />
-          </button>
-          <div className="flex flex-col items-end">
-            <div className={`flex items-center gap-2 ${theme.uiBg} px-4 py-2 rounded-full border ${theme.uiBorder}`}>
-              <button 
-                onClick={prevLevel} 
-                disabled={!customLevel && currentLevelIndex === 0}
-                className={`disabled:opacity-30 hover:${theme.accentColor} transition-colors`}
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <span className="text-sm font-medium min-w-[80px] text-center">
-                {customLevel ? "Random" : `Level ${currentLevel.id}`} / {LEVELS.length}
-              </span>
-              <button 
-                onClick={nextLevel} 
-                disabled={!customLevel && currentLevelIndex === LEVELS.length - 1}
-                className={`disabled:opacity-30 hover:${theme.accentColor} transition-colors`}
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex items-center gap-1 mt-1 mr-4">
-              <span className={`text-[10px] uppercase tracking-widest font-bold ${theme.accentColor}`}>
-                {currentLevel.category}
-              </span>
-              <span className="text-[8px] opacity-40 uppercase tracking-tighter font-bold flex items-center gap-0.5">
-                • <Wand2 className="w-2 h-2" /> Verified Solvable
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className={`min-h-screen ${theme.containerBg} ${isLight ? 'text-stone-900' : 'text-slate-100'} font-sans flex flex-col items-center p-4 md:p-12 transition-colors duration-1000 overflow-x-hidden relative`}>
 
-      {/* Game Board Container */}
-      <main className={`relative w-full max-w-md aspect-square ${theme.boardBg} rounded-2xl p-4 shadow-2xl border ${theme.uiBorder} transition-all duration-700`}>
-        <div 
-          ref={boardRef}
-          className="relative w-full h-full grid gap-1 select-none touch-none"
-          style={{ 
-            gridTemplateColumns: `repeat(${currentLevel.size}, 1fr)`,
-            gridTemplateRows: `repeat(${currentLevel.size}, 1fr)`
-          }}
-          onMouseDown={(e) => {
-            const p = getCellFromEvent(e);
-            if (p) handleStart(p.cell);
-          }}
-          onMouseMove={(e) => {
-            const p = getCellFromEvent(e);
-            if (p) handleMove(p.cell, p.raw);
-          }}
-          onMouseUp={handleEnd}
-          onMouseLeave={handleEnd}
-          onTouchStart={(e) => {
-            const p = getCellFromEvent(e);
-            if (p) handleStart(p.cell);
-          }}
-          onTouchMove={(e) => {
-            const p = getCellFromEvent(e);
-            if (p) handleMove(p.cell, p.raw);
-          }}
-          onTouchEnd={handleEnd}
-        >
-          {/* Grid Cells */}
-          {Array.from({ length: currentLevel.size * currentLevel.size }).map((_, i) => {
-            const x = i % currentLevel.size;
-            const y = Math.floor(i / currentLevel.size);
-            const pair = getPairAt({ x, y });
-            const isError = errorPoint?.x === x && errorPoint?.y === y;
-            const isConnected = pair && paths.some(p => p.value === pair.value && p.isComplete);
-            
-            return (
-              <div 
-                key={`${x}-${y}`}
-                className={`relative ${theme.cellBg} rounded-md flex items-center justify-center overflow-hidden transition-colors duration-500`}
-              >
-                {pair && (
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ 
-                      scale: isConnected ? [1, 1.15, 1] : 1,
-                      boxShadow: isConnected ? `0 0 20px ${pair.color}` : '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                      x: isError ? [0, -4, 4, -4, 4, 0] : 0
-                    }}
-                    transition={{
-                      scale: isConnected ? { duration: 0.4, repeat: Infinity, repeatDelay: 3 } : { duration: 0.2 },
-                      x: { duration: 0.3 }
-                    }}
-                    className={`w-4/5 h-4/5 ${theme.nodeShape} flex items-center justify-center text-white font-bold text-xl z-10 shadow-lg`}
-                    style={{ backgroundColor: pair.color }}
-                  >
-                    <span className={theme.nodeShape.includes('rotate-45') ? '-rotate-45' : ''}>
-                      {pair.value}
-                    </span>
-                  </motion.div>
-                )}
-                {isError && !pair && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 1] }}
-                    className="absolute inset-0 bg-red-500/20 z-0"
-                  />
-                )}
-              </div>
-            );
-          })}
-
-          {/* SVG Overlay for Paths */}
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none z-20"
-            viewBox={`0 0 ${currentLevel.size} ${currentLevel.size}`}
-          >
-            {[...paths, activePath].filter(Boolean).map((path, i) => {
-              if (!path || path.points.length < 1) return null;
-              
-              const d = generateSmoothPath(path.points);
-
-              return (
-                <g key={i}>
-                  <motion.path
-                    d={d}
-                    fill="none"
-                    stroke={path.color}
-                    strokeWidth="0.55"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    className={theme.pathOpacity}
-                  />
-                  {/* Glowing effect for the line */}
-                  <path
-                    d={d}
-                    fill="none"
-                    stroke={path.color}
-                    strokeWidth="0.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`opacity-20 ${theme.glowBlur}`}
-                  />
-                  {/* End point dot for active path */}
-                  {path === activePath && path.points.length > 0 && (
-                    <circle 
-                      cx={path.points[path.points.length - 1].x + 0.5}
-                      cy={path.points[path.points.length - 1].y + 0.5}
-                      r="0.18"
-                      fill={path.color}
-                    />
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-
-        {/* Level Complete Overlay */}
-        <AnimatePresence>
-          {isLevelComplete && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${theme.containerBg}/90 rounded-2xl backdrop-blur-sm p-8 text-center`}
-            >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Trophy className={`w-20 h-20 ${theme.accentColor.replace('text-', 'text-')} mb-4 mx-auto`} />
-                <h2 className="text-3xl font-bold mb-2">
-                  {currentLevelIndex === LEVELS.length - 1 ? "Master of Logic!" : "Level Complete!"}
-                </h2>
-                <p className="text-slate-400 mb-8">
-                  {currentLevelIndex === LEVELS.length - 1 
-                    ? "You've conquered all levels and mastered computational thinking." 
-                    : "You've successfully linked all the numbers."}
-                </p>
-                
-                <div className="flex gap-4 justify-center">
-                  <button 
-                    onClick={resetLevel}
-                    className={`flex items-center gap-2 px-6 py-3 ${theme.uiBg} hover:bg-slate-700 rounded-xl font-semibold transition-all border ${theme.uiBorder}`}
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                    Retry
-                  </button>
-                  {currentLevelIndex < LEVELS.length - 1 ? (
-                    <button 
-                      onClick={nextLevel}
-                      className={`flex items-center gap-2 px-8 py-3 ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-600').replace('-500', '-600').replace('-300', '-500')} hover:opacity-90 rounded-xl font-semibold shadow-lg transition-all`}
-                    >
-                      Next Level
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => setCurrentLevelIndex(0)}
-                      className={`flex items-center gap-2 px-8 py-3 ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-600').replace('-500', '-600').replace('-300', '-500')} hover:opacity-90 rounded-xl font-semibold shadow-lg transition-all`}
-                    >
-                      Play Again
-                      <RefreshCw className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
-
-      {/* Controls */}
-      <div className="mt-8 flex gap-4">
-        <button 
-          onClick={resetLevel}
-          className={`flex items-center gap-2 px-6 py-3 ${theme.uiBg} hover:bg-slate-700 rounded-xl font-semibold transition-all border ${theme.uiBorder}`}
-        >
-          <RefreshCw className="w-5 h-5" />
-          Reset Board
-        </button>
+      {/* Background Ambient Blurs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-40">
+        <div className={`absolute -top-24 -left-24 w-96 h-96 rounded-full blur-[120px] ${isLight ? 'bg-amber-200/40' : 'bg-amber-900/20'}`} />
+        <div className={`absolute -bottom-24 -right-24 w-96 h-96 rounded-full blur-[120px] ${isLight ? 'bg-sky-200/40' : 'bg-sky-900/20'}`} />
       </div>
 
-      {/* Instructions Modal */}
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center">
+        {/* Header Section */}
+        <header className="w-full flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 mb-1"
+            >
+              <div className={`p-2.5 ${isLight ? 'bg-stone-900 text-white' : 'bg-white text-stone-950'} rounded-xl shadow-xl shadow-stone-500/10`}>
+                <Settings2 className="w-6 h-6" />
+              </div>
+              <h1 className="text-3xl font-black tracking-tight uppercase italic underline decoration-amber-500 decoration-4 underline-offset-4">Logic Link</h1>
+            </motion.div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-stone-500/5 rounded-full border border-stone-500/10">
+              <Sparkles className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+              <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-80">{theme.name} EXPERIENCE</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-3 ${isLight ? 'glass-card-light' : 'glass-card'} px-5 py-3 rounded-2xl`}>
+              <button
+                onClick={prevLevel}
+                disabled={!customLevel && currentLevelIndex === 0}
+                className={`p-1 disabled:opacity-20 hover:scale-110 transition-transform ${theme.accentColor}`}
+              >
+                <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+              </button>
+              <div className="flex flex-col items-center min-w-[100px]">
+                <span className="text-[10px] uppercase tracking-widest font-bold opacity-40 leading-none mb-1">Mission</span>
+                <span className="text-lg font-black tabular-nums tracking-tighter">
+                  {customLevel ? "INFINITE" : `${String(currentLevel.id).padStart(3, '0')}`}
+                </span>
+              </div>
+              <button
+                onClick={nextLevel}
+                disabled={!customLevel && currentLevelIndex === LEVELS.length - 1}
+                className={`p-1 disabled:opacity-20 hover:scale-110 transition-transform ${theme.accentColor}`}
+              >
+                <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={generateRandomLevel}
+                className={`p-3 ${isLight ? 'bg-stone-900 text-white' : 'bg-white text-stone-950'} rounded-xl shadow-lg hover:rotate-90 transition-all duration-500`}
+                title="Warp to Random Level"
+              >
+                <Wand2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowInstructions(true)}
+                className={`p-3 ${isLight ? 'glass-card-light' : 'glass-card'} rounded-xl hover:scale-105 transition-all`}
+                title="Interface Manual"
+              >
+                <Info className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Global Game Area */}
+        <div className="w-full flex justify-center">
+          <motion.main
+            className={`relative w-full max-w-md aspect-square ${isLight ? 'glass-card-light' : 'glass-card'} rounded-[2.5rem] p-6 shadow-2xl transition-all duration-700`}
+          >
+            {/* Internal glow for board */}
+            <div className="absolute inset-4 rounded-[1.5rem] border border-white/5 pointer-events-none" />
+
+            <div
+              ref={boardRef}
+              className="relative w-full h-full grid gap-2 select-none touch-none"
+              style={{
+                gridTemplateColumns: `repeat(${currentLevel.size}, 1fr)`,
+                gridTemplateRows: `repeat(${currentLevel.size}, 1fr)`
+              }}
+              onMouseDown={(e) => {
+                const p = getCellFromEvent(e);
+                if (p) handleStart(p.cell);
+              }}
+              onMouseMove={(e) => {
+                const p = getCellFromEvent(e);
+                if (p) handleMove(p.cell, p.raw);
+              }}
+              onMouseUp={handleEnd}
+              onMouseLeave={handleEnd}
+              onTouchStart={(e) => {
+                const p = getCellFromEvent(e);
+                if (p) handleStart(p.cell);
+              }}
+              onTouchMove={(e) => {
+                const p = getCellFromEvent(e);
+                if (p) handleMove(p.cell, p.raw);
+              }}
+              onTouchEnd={handleEnd}
+            >
+              {/* Grid Cells */}
+              {Array.from({ length: currentLevel.size * currentLevel.size }).map((_, i) => {
+                const xPos = i % currentLevel.size;
+                const yPos = Math.floor(i / currentLevel.size);
+                const pair = getPairAt({ x: xPos, y: yPos });
+                const isError = errorPoint?.x === xPos && errorPoint?.y === yPos;
+                const isConnected = pair && paths.some(p => p.value === pair.value && p.isComplete);
+
+                return (
+                  <div
+                    key={`${xPos}-${yPos}`}
+                    className={`relative ${isLight ? 'bg-stone-500/5' : 'bg-white/5'} rounded-xl flex items-center justify-center overflow-hidden transition-colors duration-500`}
+                  >
+                    {pair && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{
+                          scale: isConnected ? [1, 1.08, 1] : 1,
+                          opacity: 1,
+                          boxShadow: isConnected ? `0 0 25px ${pair.color}66` : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                          x: isError ? [0, -4, 4, -4, 4, 0] : 0
+                        }}
+                        transition={{
+                          scale: isConnected ? { duration: 0.6, ease: "easeOut" } : { duration: 0.4 },
+                          x: { duration: 0.3 }
+                        }}
+                        className={`w-[85%] h-[85%] ${theme.nodeShape} flex items-center justify-center text-white font-black text-2xl z-10 shadow-lg`}
+                        style={{ backgroundColor: pair.color }}
+                      >
+                        <span className={`${theme.nodeShape.includes('rotate-45') ? '-rotate-45' : ''} drop-shadow-md`}>
+                          {pair.value}
+                        </span>
+                      </motion.div>
+                    )}
+                    {isError && !pair && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.4, 0] }}
+                        className="absolute inset-0 bg-red-500 z-0"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Path Overlay */}
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"
+                viewBox={`0 0 ${currentLevel.size} ${currentLevel.size}`}
+              >
+                {[...paths, activePath].filter(Boolean).map((path, idx) => {
+                  if (!path || path.points.length < 1) return null;
+                  const d = generateSmoothPath(path.points);
+                  return (
+                    <g key={idx}>
+                      <motion.path
+                        d={d}
+                        fill="none"
+                        stroke={path.color}
+                        strokeWidth="0.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        className="opacity-90"
+                      />
+                      {/* Secondary Glow Path */}
+                      <path
+                        d={d}
+                        fill="none"
+                        stroke={path.color}
+                        strokeWidth="0.65"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="opacity-20 blur-[3px]"
+                      />
+                      {path === activePath && path.points.length > 0 && (
+                        <motion.circle
+                          animate={{ r: [0.12, 0.16, 0.12] }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          cx={path.points[path.points.length - 1].x + 0.5}
+                          cy={path.points[path.points.length - 1].y + 0.5}
+                          r="0.12"
+                          fill={path.color}
+                          className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+                        />
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+
+            {/* Level Complete Overlay */}
+            <AnimatePresence>
+              {isLevelComplete && (
+                <motion.div
+                  initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                  animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
+                  exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                  className={`absolute inset-0 z-50 flex flex-col items-center justify-center ${isLight ? 'bg-stone-50/80' : 'bg-stone-950/80'} rounded-[2.5rem] p-8 text-center`}
+                >
+                  <motion.div
+                    initial={{ y: 40, opacity: 0, scale: 0.8 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", damping: 15 }}
+                  >
+                    <div className={`w-28 h-28 mx-auto mb-8 relative`}>
+                      <div className={`absolute inset-0 ${isLight ? 'bg-amber-500/20' : 'bg-amber-500/10'} rounded-full blur-2xl animate-pulse`} />
+                      <Trophy className={`w-28 h-28 ${isLight ? 'text-amber-600' : 'text-amber-400'} relative z-10 drop-shadow-2xl`} />
+                    </div>
+                    <h2 className="text-4xl font-black mb-3 tracking-tighter uppercase italic">
+                      {currentLevelIndex === LEVELS.length - 1 ? "Omega Conquered" : "Signal Synchronized"}
+                    </h2>
+                    <p className="text-stone-500 font-medium mb-10 max-w-[240px] mx-auto text-sm leading-relaxed">
+                      {currentLevelIndex === LEVELS.length - 1
+                        ? "You have achieved total logical synchronization across all dimensions."
+                        : "Current link nodes established. Ready for next sequence."}
+                    </p>
+
+                    <div className="flex flex-col gap-4 items-stretch">
+                      {currentLevelIndex < LEVELS.length - 1 ? (
+                        <button
+                          onClick={nextLevel}
+                          className={`flex items-center justify-center gap-3 px-10 py-5 ${isLight ? 'bg-stone-900 text-white' : 'bg-white text-stone-900'} hover:scale-105 active:scale-95 rounded-2xl font-black text-lg shadow-2xl transition-all uppercase tracking-widest`}
+                        >
+                          Next Sequence
+                          <ChevronRight className="w-6 h-6 stroke-[3]" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setCurrentLevelIndex(0)}
+                          className={`flex items-center justify-center gap-3 px-10 py-5 ${isLight ? 'bg-amber-600 text-white' : 'bg-amber-500 text-stone-900'} hover:opacity-90 rounded-2xl font-black text-lg shadow-xl shadow-amber-500/20 transition-all uppercase tracking-widest`}
+                        >
+                          Reboot Drive
+                          <RefreshCw className="w-5 h-5 stroke-[3]" />
+                        </button>
+                      )}
+                      <button
+                        onClick={resetLevel}
+                        className={`flex items-center justify-center gap-2 px-6 py-4 ${isLight ? 'bg-stone-200 text-stone-700' : 'bg-stone-800 text-stone-300'} hover:bg-opacity-80 rounded-2xl font-bold transition-all text-xs uppercase tracking-widest`}
+                      >
+                        Recalibrate
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.main>
+        </div>
+
+        {/* Global Controls */}
+        <footer className="mt-16 flex flex-col items-center gap-10 w-full">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={resetLevel}
+            className={`flex items-center gap-3 px-8 py-4 ${isLight ? 'glass-card-light' : 'glass-card'} rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all border ${theme.uiBorder} shadow-lg`}
+          >
+            <RefreshCw className="w-4 h-4 stroke-[2.5]" />
+            Purge Signal Paths
+          </motion.button>
+
+          <div className="flex flex-col items-center opacity-30 gap-1 mt-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.5em]">{theme.name} ENVIRONMENT v2.0</p>
+            <div className="w-24 h-px bg-current opacity-20" />
+          </div>
+        </footer>
+      </div>
+
+      {/* Instructions Overlay */}
       <AnimatePresence>
         {showInstructions && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+            className={`fixed inset-0 z-[100] flex items-center justify-center p-6 ${isLight ? 'bg-stone-100/90' : 'bg-stone-950/90'} backdrop-blur-xl`}
           >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className={`${theme.uiBg} border ${theme.uiBorder} p-8 rounded-3xl max-w-md w-full shadow-2xl`}
+            <motion.div
+              initial={{ scale: 0.8, y: 40, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              className={`${isLight ? 'bg-white' : 'bg-stone-900'} border ${isLight ? 'border-stone-200' : 'border-stone-800'} p-10 rounded-[3rem] max-w-md w-full shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] relative overflow-hidden`}
             >
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Info className={theme.accentColor} />
-                How to Play
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-3xl -mr-16 -mt-16" />
+
+              <h2 className="text-3xl font-black mb-8 flex items-center gap-3 uppercase italic tracking-tighter">
+                <div className={`p-2 ${isLight ? 'bg-amber-600' : 'bg-amber-500'} rounded-lg`}>
+                  <Info className="text-white w-5 h-5" />
+                </div>
+                Manual Overlay
               </h2>
-              <ul className="space-y-4 text-slate-300 mb-8">
-                <li className="flex gap-3">
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-900/50').replace('-500', '-900/50').replace('-300', '-900/50')} ${theme.accentColor} flex items-center justify-center text-xs font-bold`}>1</span>
-                  <p>Click and drag from a number to its matching pair.</p>
-                </li>
-                <li className="flex gap-3">
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-900/50').replace('-500', '-900/50').replace('-300', '-900/50')} ${theme.accentColor} flex items-center justify-center text-xs font-bold`}>2</span>
-                  <p>Lines cannot cross or intersect with other lines.</p>
-                </li>
-                <li className="flex gap-3">
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-900/50').replace('-500', '-900/50').replace('-300', '-900/50')} ${theme.accentColor} flex items-center justify-center text-xs font-bold`}>3</span>
-                  <p>Connect all pairs to complete the level.</p>
-                </li>
-                <li className="flex gap-3">
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-900/50').replace('-500', '-900/50').replace('-300', '-900/50')} ${theme.accentColor} flex items-center justify-center text-xs font-bold`}>4</span>
-                  <p>You can continue drawing an incomplete path by clicking its tip.</p>
-                </li>
-              </ul>
-              <button 
+
+              <div className="space-y-6 text-stone-500 font-medium text-sm mb-12">
+                {[
+                  "Initiate connection by dragging from any numeric node.",
+                  "Signal paths cannot cross or inhabit the same spatial grid.",
+                  "Establish full node synchronization to complete priority mission.",
+                  "Incomplete paths can be re-engaged by clicking their terminal point."
+                ].map((text, i) => (
+                  <div key={i} className="flex gap-4 items-start group">
+                    <span className={`flex-shrink-0 w-7 h-7 rounded-lg ${isLight ? 'bg-stone-100 text-stone-900' : 'bg-stone-800 text-stone-100'} flex items-center justify-center text-[10px] font-black group-hover:bg-amber-500 group-hover:text-white transition-colors`}>{i + 1}</span>
+                    <p className="leading-relaxed mt-1">{text}</p>
+                  </div>
+                ))}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   setShowInstructions(false);
                   vibrate(10);
                 }}
-                className={`w-full py-4 ${theme.accentColor.replace('text-', 'bg-').replace('-400', '-600').replace('-500', '-600').replace('-300', '-500')} hover:opacity-90 rounded-2xl font-bold text-lg shadow-lg transition-all`}
+                className={`w-full py-5 ${isLight ? 'bg-stone-900 text-white' : 'bg-white text-stone-950'} rounded-2xl font-black text-lg shadow-2xl transition-all uppercase tracking-widest`}
               >
-                Got it, Let's Play!
-              </button>
+                Access Interface
+              </motion.button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Footer */}
-      <footer className="mt-auto pt-12 text-slate-500 text-sm">
-        <p>© 2026 Logic Link • {theme.name} Theme</p>
-      </footer>
     </div>
   );
 }
