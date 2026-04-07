@@ -1,9 +1,21 @@
 <div align="center">
-   <h1 className="text-5xl">Number Link</h1>
+   <h1 className="text-5xl">Logic Link</h1>
+   <p>A premium Number Link puzzle experience</p>
 </div>
 
 # Logic Link 
-A modern, interactive React application. Built with Vite for optimal performance and TypeScript for type safety.
+Logic Link is a modern, interactive puzzle game built with React and TypeScript. It features a curated collection of handcrafted levels, a "Liquid Glass" design system, and dynamic scaling that ensures a perfect experience on any grid size.
+
+---
+
+## ✨ Core Features
+
+-   **Liquid Glass UI**: A premium, vibrant design system with smooth animations and glassmorphism.
+-   **Handcrafted Levels**: 100+ curated levels ranging from 5x5 to 9x9 grids.
+-   **Thinking Brain Logic**: Sophisticated level design where matching endpoints are strategically placed to maximize challenge.
+-   **Dynamic Grid Scaling**: Intelligent layout system that automatically adjusts padding, node size, and stroke widths for 8x8 and 9x9 grids.
+-   **Persistent Progress**: Automatically saves your current level and completed missions.
+-   **Haptic Feedback**: Integrated vibration support for a tactile gameplay experience.
 
 ---
 
@@ -24,10 +36,6 @@ A modern, interactive React application. Built with Vite for optimal performance
 
 2. **Configure environment variables:**
    - Copy `.env.example` to `.env.local`
-   - Set your `GEMINI_API_KEY`:
-     ```
-     VITE_GEMINI_API_KEY=your_api_key_here
-     ```
 
 3. **Start development server:**
 
@@ -35,7 +43,7 @@ A modern, interactive React application. Built with Vite for optimal performance
    npm run dev
    ```
 
-   The app will be available at `http://localhost:5173`
+   The app will be available at `http://localhost:3000`
 
 ---
 
@@ -82,10 +90,6 @@ A modern, interactive React application. Built with Vite for optimal performance
 
 Create a `.env.local` file in the project root:
 
-```
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
-```
-
 **Never commit `.env.local` to version control.**
 
 ---
@@ -100,12 +104,6 @@ npm run build
 
 This generates a `dist/` directory with optimized production assets.
 
-### Deployment Options
-
-- **AI Studio:** Deploy directly through the [AI Studio dashboard](https://ai.studio/apps/d46c40e5-36b2-4a63-9f5f-a8feb64d17a7)
-- **Vercel:** Connect your GitHub repo for automatic deployments
-- **Netlify:** Upload the `dist/` folder
-- **Traditional Hosting:** Serve the `dist/` folder with any HTTP server
 
 ---
 
@@ -124,7 +122,6 @@ This generates a `dist/` directory with optimized production assets.
 - [React Documentation](https://react.dev)
 - [Vite Documentation](https://vitejs.dev)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [Google Gemini API Docs](https://ai.google.dev/docs)
 
 ---
 

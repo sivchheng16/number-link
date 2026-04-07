@@ -47,7 +47,7 @@ export const THEMES: Record<string, Theme> = {
     containerBg: 'bg-stone-950',
     boardBg: 'bg-stone-900/40',
     cellBg: 'bg-stone-800/30',
-    nodeShape: 'rounded-lg rotate-45',
+    nodeShape: 'rotate-45',
     accentColor: 'text-amber-500',
     uiBg: 'bg-stone-900/80',
     uiBorder: 'border-stone-800',

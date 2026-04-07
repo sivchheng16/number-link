@@ -23,6 +23,7 @@ import { LEVELS } from "./levels";
 import { Point, Path, Level, Pair } from "./types";
 import { THEMES } from "./themes";
 import { SkillRoadmap } from "./SkillRoadmap";
+import { div } from "motion/react-client";
 
 export default function App() {
   const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
@@ -111,7 +112,7 @@ export default function App() {
   const generateSmoothPath = (points: Point[]) => {
     if (points.length < 2) return "";
 
-    const radius = 0.35; // Rounding radius in grid units
+    const radius = 0.1; // Rounding radius in grid units
     let d = `M ${points[0].x + 0.5} ${points[0].y + 0.5}`;
 
     for (let i = 1; i < points.length - 1; i++) {
@@ -657,26 +658,48 @@ export default function App() {
                 const isConnected =
                   pair &&
                   paths.some((p) => p.value === pair.value && p.isComplete);
+                const isInActivePath =
+                  activePath &&
+                  activePath.points.some((p) => p.x === xPos && p.y === yPos);
+                const completedPathAtCell = paths.find(
+                  (path) =>
+                    path.isComplete &&
+                    path.points.some((p) => p.x === xPos && p.y === yPos),
+                );
+                const isInCompletedPath = !!completedPathAtCell;
+
+                const isLargeGrid = currentLevel.size >= 8;
 
                 return (
-                  <div key={`${xPos}-${yPos}`} className="relative p-1">
+                  <div key={`${xPos}-${yPos}`} className={`relative ${isLargeGrid ? 'p-0.5' : 'p-1.5'}`}>
                     <div
-                      className={`w-full h-full ${isLight ? "bg-stone-500/5" : "bg-white/5"} rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300`}
+                      className={`w-full h-full ${isLight ? "bg-stone-500/5" : "bg-white/5"} ${isLargeGrid ? 'rounded-md' : 'rounded-lg'} flex items-center justify-center overflow-hidden`}
+                      style={{
+                        border: isInActivePath
+                          ? `2px solid ${activePath.color} `
+                          : isInCompletedPath && completedPathAtCell
+                            ? `2px solid ${completedPathAtCell.color} `
+                            : "none",
+                        background: isInActivePath ? `${activePath.color}20` : isInCompletedPath && completedPathAtCell ? `${completedPathAtCell.color}20` : theme.cellBg,
+                      }}
                     >
                       {pair && (
                         <motion.div
-                          initial={{ scale: 0, opacity: 0 }}
+                          style={{
+                            backgroundColor: pair.color,
+                          }}
+                          initial={{ scale: 1, opacity: 1 }}
                           animate={{
                             scale:
                               isDragging && activePath?.value === pair.value
-                                ? 1.15
+                                ? 1
                                 : isConnected
-                                  ? [1, 1.08, 1]
+                                  ? 1
                                   : 1,
                             opacity: 1,
                             boxShadow:
                               isConnected ||
-                              (isDragging && activePath?.value === pair.value)
+                                (isDragging && activePath?.value === pair.value)
                                 ? `0 0 35px ${pair.color}88`
                                 : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
                             x: isError ? [0, -4, 4, -4, 4, 0] : 0,
@@ -684,14 +707,13 @@ export default function App() {
                           transition={{
                             scale:
                               isDragging && activePath?.value === pair.value
-                                ? { duration: 0.2 }
+                                ? { duration: 0.1 }
                                 : isConnected
-                                  ? { duration: 0.6, ease: "easeOut" }
-                                  : { duration: 0.4 },
-                            x: { duration: 0.3 },
+                                  ? { duration: 0.1, ease: "easeOut" }
+                                  : { duration: 0.1 },
+                            x: { duration: 0.1 },
                           }}
-                          className={`w-[80%] h-[80%] ${theme.nodeShape} flex items-center justify-center text-white font-black text-2xl z-30 shadow-lg border-4 border-white/20 backdrop-blur-sm`}
-                          style={{ backgroundColor: pair.color }}
+                          className={`${isLargeGrid ? 'w-[85%] h-[85%]' : 'w-[75%] h-[75%]'} ${theme.nodeShape} flex items-center justify-center text-white font-black ${isLargeGrid ? 'text-lg' : 'text-2xl'} z-30 shadow-lg border-4 border-white/20 backdrop-blur-sm`}
                         >
                           <span
                             className={`${theme.nodeShape.includes("rotate-45") ? "-rotate-45" : ""} drop-shadow-md`}
@@ -704,14 +726,13 @@ export default function App() {
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: [0, 0.4, 0] }}
-                          className="absolute inset-0 bg-red-500 z-0"
+                          className="absolute inset-0 bg-red-500 rounded-2xl z-0"
                         />
                       )}
                     </div>
                   </div>
                 );
               })}
-
               {/* Path Overlay */}
               <svg
                 className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible"
@@ -726,17 +747,19 @@ export default function App() {
                     if (!path || path.points.length < 1) return null;
                     const d = generateSmoothPath(path.points);
                     const isActive = path === activePath;
+                    const isLargeGrid = currentLevel.size >= 8;
                     return (
                       <g key={isActive ? "active-path" : `path-${path.value}`}>
                         <motion.path
                           d={d}
                           fill="none"
                           stroke={path.color}
-                          strokeWidth="0.5"
+                          strokeWidth={isLargeGrid ? "0.6" : "0.4"}
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           initial={isActive ? false : { pathLength: 0 }}
                           animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.05 }}
                           className="opacity-90"
                         />
                         {/* Secondary Glow Path */}
@@ -744,12 +767,12 @@ export default function App() {
                           d={d}
                           fill="none"
                           stroke={path.color}
-                          strokeWidth="0.65"
+                          strokeWidth={isLargeGrid ? "0.9" : "0.65"}
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="opacity-20 blur-[3px]"
+                          className="opacity-25 blur-[3px]"
                         />
-                        {path === activePath && path.points.length > 0 && (
+                        {/* {path === activePath && path.points.length > 0 && (
                           <motion.circle
                             animate={{ r: [0.12, 0.16, 0.12] }}
                             transition={{ repeat: Infinity, duration: 1 }}
@@ -759,7 +782,7 @@ export default function App() {
                             fill={path.color}
                             className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
                           />
-                        )}
+                        )} */}
                       </g>
                     );
                   })}
@@ -798,7 +821,6 @@ export default function App() {
             exit={{ opacity: 0 }}
             className={`fixed inset-0 z-[100] flex items-center justify-center p-6 ${isLight ? "bg-stone-100/90" : "bg-stone-950/90"} backdrop-blur-xl`}
           >
-            
             <motion.div
               initial={{ scale: 0.8, y: 40, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}

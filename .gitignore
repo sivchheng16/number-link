@@ -6,4 +6,4 @@ coverage/
 *.log
 .env*
 !.env.example
-awsome-skill/
+awesome-skills/
