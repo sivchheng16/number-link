@@ -18,11 +18,13 @@ import {
   Wand2,
   Settings2,
   Rocket,
+  MapIcon,
+  Lock,
 } from "lucide-react";
 import { LEVELS } from "./levels";
 import { Point, Path, Level, Pair } from "./types";
 import { THEMES } from "./themes";
-import { SkillRoadmap } from "./SkillRoadmap";
+import { LevelMap } from "./LevelMap";
 import { div } from "motion/react-client";
 import logo from "../public/favicon.png"
 
@@ -126,7 +128,7 @@ export default function App() {
     }
     return [];
   });
-  const [showRoadmap, setShowRoadmap] = useState(false);
+  const [showLevelMap, setShowLevelMap] = useState(false);
 
   const currentLevel = LEVELS[currentLevelIndex];
   const theme = THEMES[currentLevel.category] || THEMES["Starter Pack"];
@@ -575,6 +577,8 @@ export default function App() {
     }
   };
 
+  const isNextUnlocked = currentLevelIndex < LEVELS.length - 1 && completedLevelIds.includes(currentLevel.id);
+
   const isLight =
     theme.containerBg.includes("stone-50") ||
     theme.containerBg.includes("emerald-50") ||
@@ -645,10 +649,10 @@ export default function App() {
               </div>
               <button
                 onClick={nextLevel}
-                disabled={currentLevelIndex === LEVELS.length - 1}
+                disabled={!isNextUnlocked}
                 className={`p-1 disabled:opacity-20 hover:scale-110 transition-transform ${theme.accentColor}`}
               >
-                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+                {isNextUnlocked ? <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" /> : <Lock className="w-4 h-4 sm:w-5 sm:h-5 opacity-50" />}
               </button>
             </div>
 
@@ -668,6 +672,13 @@ export default function App() {
             </div>
 
             <div className="flex flex-row gap-2">
+              <button
+                onClick={() => setShowLevelMap(true)}
+                className={`flex items-center justify-center aspect-square p-2.5 sm:p-3 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl hover:scale-105 active:scale-95 transition-all text-amber-500`}
+                title="Level Map"
+              >
+                <MapIcon className="w-5 h-5" />
+              </button>
               <button
                 onClick={() => setLang(l => l === 'en' ? 'km' : 'en')}
                 className={`flex items-center justify-center px-4 py-2.5 sm:py-3 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl hover:scale-105 transition-all font-black text-sm uppercase tracking-widest`}
@@ -1014,12 +1025,18 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Skill Roadmap Overlay */}
+      {/* Level Map Overlay */}
       <AnimatePresence>
-        {showRoadmap && (
-          <SkillRoadmap
+        {showLevelMap && (
+          <LevelMap
             isLight={isLight}
-            onClose={() => setShowRoadmap(false)}
+            onClose={() => setShowLevelMap(false)}
+            completedLevelIds={completedLevelIds}
+            currentLevelIndex={currentLevelIndex}
+            onSelectLevel={(idx) => {
+              setCurrentLevelIndex(idx);
+              setShowLevelMap(false);
+            }}
           />
         )}
       </AnimatePresence>
