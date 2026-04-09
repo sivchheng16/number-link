@@ -6,4 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
-awesome-skills/
+skill/
+skill/*
+antigravity-awesome-skills

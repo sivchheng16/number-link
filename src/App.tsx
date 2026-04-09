@@ -24,8 +24,71 @@ import { Point, Path, Level, Pair } from "./types";
 import { THEMES } from "./themes";
 import { SkillRoadmap } from "./SkillRoadmap";
 import { div } from "motion/react-client";
+import logo from "../public/favicon.png"
+
+const TRANSLATIONS = {
+  en: {
+    logo: "Link Number",
+    level: "Level",
+    filled: "Filled",
+    howToPlayTitle: "How to Play",
+    restart: "Restart",
+    version: "Version",
+    instructions: [
+      "Connect matching numbers.",
+      "Lines cannot cross.",
+      "Fill all squares.",
+      "Click a number to clear its line."
+    ],
+    gotIt: "Got it!",
+    allLevelsDone: "All Levels Done!",
+    levelComplete: "Level Complete!",
+    finishedAll: "You have finished all levels!",
+    goodJob: "Good job!",
+    nextLevel: "Next Level",
+    playAgain: "Play Again",
+    restartLevel: "Restart Level",
+    title: "Draw to pair numbers"
+  },
+  km: {
+    logo: "Link Number",
+    level: "វគ្គ",
+    filled: "បំពេញ",
+    howToPlayTitle: "របៀបលេង",
+    restart: "ចាប់ផ្តើមឡើងវិញ",
+    version: "ជំនាន់ទី",
+    instructions: [
+      "ភ្ជាប់លេខដូចគ្នា។",
+      "ខ្សែមិនអាចកាត់ខ្វែងគ្នាបានទេ។",
+      "បំពេញគ្រប់ប្រឡោះទាំងអស់។",
+      "ចុចលើលេខដើម្បីលុបខ្សែ។"
+    ],
+    gotIt: "យល់ហើយ!",
+    allLevelsDone: "ចប់គ្រប់វគ្គ!",
+    levelComplete: "ជោគជ័យ!",
+    finishedAll: "អ្នកបានបញ្ចប់គ្រប់វគ្គទាំងអស់!",
+    goodJob: "ធ្វើបានល្អណាស់!",
+    nextLevel: "វគ្គបន្ទាប់",
+    playAgain: "លេងម្តងទៀត",
+    restartLevel: "លេងវគ្គនេះម្តងទៀត",
+    title: "គូរដើម្បីភ្ជាប់លេខ",
+  }
+};
 
 export default function App() {
+  const [lang, setLang] = useState<'en' | 'km'>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("logic-link-lang") as 'en' | 'km') || 'en';
+    }
+    return 'en';
+  });
+
+  useEffect(() => {
+    localStorage.setItem("logic-link-lang", lang);
+  }, [lang]);
+
+  const t = TRANSLATIONS[lang];
+
   const [currentLevelIndex, setCurrentLevelIndex] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("logic-link-current-index");
@@ -37,6 +100,17 @@ export default function App() {
   const [activePath, setActivePath] = useState<Path | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isLevelComplete, setIsLevelComplete] = useState(false);
+  const [showCompletionCard, setShowCompletionCard] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (isLevelComplete) {
+      timeoutId = setTimeout(() => setShowCompletionCard(true), 1000);
+    } else {
+      setShowCompletionCard(false);
+    }
+    return () => clearTimeout(timeoutId);
+  }, [isLevelComplete]);
   const [showInstructions, setShowInstructions] = useState(() => {
     if (typeof window !== "undefined") {
       const seen = localStorage.getItem("logic-link-seen-instructions");
@@ -508,7 +582,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen ${theme.containerBg} ${isLight ? "text-stone-900" : "text-slate-100"} font-sans flex flex-col items-center p-4 md:p-12 transition-colors duration-1000 overflow-x-hidden relative`}
+      className={`h-[100dvh] w-full ${theme.containerBg} ${isLight ? "text-stone-900" : "text-slate-100"} font-sans flex flex-col items-center p-2 sm:p-4 md:p-8 transition-colors duration-1000 overflow-hidden relative justify-between mx-auto`}
     >
       {/* Background Ambient Blurs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-40">
@@ -520,50 +594,52 @@ export default function App() {
         />
       </div>
 
-      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center">
+      <div className="w-full max-w-4xl relative z-10 flex flex-col items-center h-full justify-between">
         {/* Header Section */}
-        <header className="w-full flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+        <header className="w-full flex flex-col sm:flex-row justify-between items-center shrink-0 mb-4 sm:mb-8 md:mb-12 gap-4">
+          <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 mb-1"
+              className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2"
             >
               <div
-                className={`p-2.5 ${isLight ? "bg-stone-900 text-white" : "bg-white text-stone-950"} rounded-xl shadow-xl shadow-stone-500/10`}
+                className={`border border-1${isLight ? "bg-white" : "bg-white text-stone-950"} rounded-xl shadow-xl shadow-stone-500/10`}
               >
-                <Settings2 className="w-6 h-6" />
+                {/* <Settings2 className="w-5 h-5 sm:w-6 sm:h-6" /> */}
+                <img src={logo} alt="logo" className="w-8 h-8 sm:w-10 sm:h-10 " />
+
               </div>
-              <h1 className="text-3xl font-black tracking-tight uppercase italic underline decoration-amber-500 decoration-4 underline-offset-4">
-                Logic Link
+              <h1 className="text-xl sm:text-3xl font-black tracking-tight uppercase italic underline decoration-amber-500 decoration-4 underline-offset-4">
+                {t.logo}
               </h1>
             </motion.div>
-            <div className="flex items-center gap-2 px-3 py-1 bg-stone-500/5 rounded-full border border-stone-500/10">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 bg-stone-500/5 rounded-full border border-stone-500/10 mb-2 sm:mb-0">
               <Sparkles
-                className={`w-3.5 h-3.5 ${isLight ? "text-amber-600" : "text-amber-400"}`}
+                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isLight ? "text-amber-600" : "text-amber-400"}`}
               />
-              <span className="text-[11px] uppercase tracking-[0.2em] font-bold opacity-80">
-                {theme.name} EXPERIENCE
+              <span className="text-[9px] sm:text-[11px] uppercase tracking-[0.2em] font-bold opacity-80">
+                {t.title}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 shrink-0">
             <div
-              className={`flex items-center gap-3 ${isLight ? "glass-card-light" : "glass-card"} px-5 py-3 rounded-2xl`}
+              className={`flex items-center gap-1 sm:gap-3 ${isLight ? "glass-card-light" : "glass-card"} px-3 sm:px-5 py-2 sm:py-3 rounded-2xl`}
             >
               <button
                 onClick={prevLevel}
                 disabled={currentLevelIndex === 0}
                 className={`p-1 disabled:opacity-20 hover:scale-110 transition-transform ${theme.accentColor}`}
               >
-                <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
               </button>
-              <div className="flex flex-col items-center min-w-[100px]">
-                <span className="text-[10px] uppercase tracking-widest font-bold opacity-40 leading-none mb-1">
-                  Mission
+              <div className="flex flex-col items-center min-w-[60px] sm:min-w-[100px]">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold opacity-40 leading-none mb-1">
+                  {t.level}
                 </span>
-                <span className="text-lg font-black tabular-nums tracking-tighter">
+                <span className="text-base sm:text-lg font-black tabular-nums tracking-tighter">
                   {`${String(currentLevel.id).padStart(3, "0")}`}
                 </span>
               </div>
@@ -572,38 +648,37 @@ export default function App() {
                 disabled={currentLevelIndex === LEVELS.length - 1}
                 className={`p-1 disabled:opacity-20 hover:scale-110 transition-transform ${theme.accentColor}`}
               >
-                <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
               </button>
             </div>
 
             <div
-              className={`flex items-center gap-3 ${isLight ? "glass-card-light" : "glass-card"} px-5 py-3 rounded-2xl border ${theme.uiBorder}`}
+              className={`flex items-center gap-1 sm:gap-3 ${isLight ? "glass-card-light" : "glass-card"} px-3 sm:px-5 py-2 sm:py-3 rounded-2xl border ${theme.uiBorder}`}
             >
-              <div className="flex flex-col items-center min-w-[100px]">
-                <span className="text-[10px] uppercase tracking-widest font-bold opacity-40 leading-none mb-1">
-                  Coverage
+              <div className="flex flex-col items-center min-w-[60px] sm:min-w-[100px]">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold opacity-40 leading-none mb-1">
+                  {t.filled}
                 </span>
                 <span
-                  className={`text-lg font-black tabular-nums tracking-tighter ${getOccupiedCount() === currentLevel.size * currentLevel.size ? "text-emerald-500" : ""}`}
+                  className={`text-base sm:text-lg font-black tabular-nums tracking-tighter ${getOccupiedCount() === currentLevel.size * currentLevel.size ? "text-emerald-500" : ""}`}
                 >
                   {getOccupiedCount()}/{currentLevel.size * currentLevel.size}
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              {/* <button
-                onClick={() => setShowRoadmap(true)}
-                className={`p-3 ${isLight ? 'glass-card-light' : 'glass-card'} rounded-xl hover:scale-105 hover:bg-amber-500/10 transition-all border ${theme.uiBorder}`}
-                title="Skill Roadmap"
+            <div className="flex flex-row gap-2">
+              <button
+                onClick={() => setLang(l => l === 'en' ? 'km' : 'en')}
+                className={`flex items-center justify-center px-4 py-2.5 sm:py-3 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl hover:scale-105 transition-all font-black text-sm uppercase tracking-widest`}
+                title="Switch Language"
               >
-                <Rocket className={`w-5 h-5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
-              </button> */}
-
+                {lang === 'en' ? 'KM' : 'EN'}
+              </button>
               <button
                 onClick={() => setShowInstructions(true)}
-                className={`p-3 ${isLight ? "glass-card-light" : "glass-card"} rounded-xl hover:scale-105 transition-all`}
-                title="Interface Manual"
+                className={`flex items-center justify-center aspect-square p-2.5 sm:p-3 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl hover:scale-105 transition-all`}
+                title={t.howToPlayTitle}
               >
                 <Info className="w-5 h-5" />
               </button>
@@ -612,9 +687,9 @@ export default function App() {
         </header>
 
         {/* Global Game Area */}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex-1 flex flex-col justify-center items-center min-h-0">
           <motion.main
-            className={`relative w-full max-w-md aspect-square ${isLight ? "glass-card-light" : "glass-card"} rounded-[2.5rem] p-6 shadow-2xl transition-all duration-700`}
+            className={`relative w-full max-w-[min(100%,400px)] aspect-square ${isLight ? "glass-card-light" : "glass-card"} rounded-3xl sm:rounded-[2.5rem] p-3 sm:p-6 shadow-2xl transition-all duration-700 flex-shrink min-h-0 m-auto mt-2 mb-2`}
           >
             {/* Internal glow for board */}
             <div className="absolute inset-4 rounded-[1.5rem] border border-white/5 pointer-events-none" />
@@ -676,9 +751,9 @@ export default function App() {
                       className={`w-full h-full ${isLight ? "bg-stone-500/5" : "bg-white/5"} ${isLargeGrid ? 'rounded-md' : 'rounded-lg'} flex items-center justify-center overflow-hidden`}
                       style={{
                         border: isInActivePath
-                          ? `2px solid ${activePath.color} `
+                          ? `1px solid ${activePath.color} `
                           : isInCompletedPath && completedPathAtCell
-                            ? `2px solid ${completedPathAtCell.color} `
+                            ? `1px solid ${completedPathAtCell.color} `
                             : "none",
                         background: isInActivePath ? `${activePath.color}20` : isInCompletedPath && completedPathAtCell ? `${completedPathAtCell.color}20` : theme.cellBg,
                       }}
@@ -792,22 +867,22 @@ export default function App() {
         </div>
 
         {/* Global Controls */}
-        <footer className="mt-16 flex flex-col items-center gap-10 w-full">
+        <footer className="mt-2 sm:mt-12 flex flex-col items-center gap-3 sm:gap-10 w-full shrink-0">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={resetLevel}
-            className={`flex items-center gap-3 px-8 py-4 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all border ${theme.uiBorder} shadow-lg`}
+            className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 ${isLight ? "glass-card-light" : "glass-card"} rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] transition-all border ${theme.uiBorder} shadow-lg`}
           >
-            <RefreshCw className="w-4 h-4 stroke-[2.5]" />
-            Purge Signal Paths
+            <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+            {t.restart}
           </motion.button>
 
-          <div className="flex flex-col items-center opacity-30 gap-1 mt-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.5em]">
-              {theme.name} ENVIRONMENT v2.0
+          <div className="flex flex-col items-center opacity-30 gap-1 my-1 sm:my-2">
+            <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.5em] text-center">
+              {theme.name}
             </p>
-            <div className="w-24 h-px bg-current opacity-20" />
+            <div className="w-16 sm:w-24 h-px bg-current opacity-20" />
           </div>
         </footer>
       </div>
@@ -834,16 +909,11 @@ export default function App() {
                 >
                   <Info className="text-white w-5 h-5" />
                 </div>
-                How to Play
+                {t.howToPlayTitle}
               </h2>
 
               <div className="space-y-6 text-stone-500 font-medium text-sm mb-12">
-                {[
-                  "Connect matching numbers by dragging your finger or mouse between them.",
-                  "Lines cannot cross each other or overlap.",
-                  "Fill every square on the grid to complete the level.",
-                  "Click any number to clear its line and start over.",
-                ].map((text, i) => (
+                {t.instructions.map((text, i) => (
                   <div key={i} className="flex gap-4 items-start group">
                     <span
                       className={`flex-shrink-0 w-7 h-7 rounded-lg ${isLight ? "bg-stone-100 text-stone-900" : "bg-stone-800 text-stone-100"} flex items-center justify-center text-[10px] font-black group-hover:bg-amber-500 group-hover:text-white transition-colors`}
@@ -865,7 +935,7 @@ export default function App() {
                 }}
                 className={`w-full py-5 ${isLight ? "bg-stone-900 text-white" : "bg-white text-stone-950"} rounded-2xl font-black text-lg shadow-2xl transition-all uppercase tracking-widest`}
               >
-                Got it!
+                {t.gotIt}
               </motion.button>
             </motion.div>
           </motion.div>
@@ -874,7 +944,7 @@ export default function App() {
 
       {/* Level Complete Overlay (Global) */}
       <AnimatePresence>
-        {isLevelComplete && (
+        {showCompletionCard && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -901,14 +971,14 @@ export default function App() {
 
               <h2 className="text-3xl font-black mb-3 tracking-tighter uppercase italic">
                 {currentLevelIndex === LEVELS.length - 1
-                  ? "Omega Conquered"
-                  : "Signal Synchronized"}
+                  ? t.allLevelsDone
+                  : t.levelComplete}
               </h2>
 
               <p className="text-stone-500 font-medium mb-10 max-w-[240px] mx-auto text-sm leading-relaxed">
                 {currentLevelIndex === LEVELS.length - 1
-                  ? "You have achieved total logical synchronization across all dimensions."
-                  : "Grid fully saturated. Signal link at 100% capacity."}
+                  ? t.finishedAll
+                  : t.goodJob}
               </p>
 
               <div className="flex flex-col gap-4 items-stretch">
@@ -917,7 +987,7 @@ export default function App() {
                     onClick={nextLevel}
                     className={`flex items-center justify-center gap-3 px-10 py-5 ${isLight ? "bg-stone-900 text-white" : "bg-white text-stone-900"} hover:scale-105 active:scale-95 rounded-2xl font-black text-lg shadow-2xl transition-all uppercase tracking-widest`}
                   >
-                    Next Sequence
+                    {t.nextLevel}
                     <ChevronRight className="w-6 h-6 stroke-[3]" />
                   </button>
                 ) : (
@@ -928,7 +998,7 @@ export default function App() {
                     }}
                     className={`flex items-center justify-center gap-3 px-10 py-5 ${isLight ? "bg-amber-600 text-white" : "bg-amber-500 text-stone-900"} hover:opacity-90 rounded-2xl font-black text-lg shadow-xl shadow-amber-500/20 transition-all uppercase tracking-widest`}
                   >
-                    Reboot Drive
+                    {t.playAgain}
                     <RefreshCw className="w-5 h-5 stroke-[3]" />
                   </button>
                 )}
@@ -936,7 +1006,7 @@ export default function App() {
                   onClick={resetLevel}
                   className={`flex items-center justify-center gap-2 px-6 py-4 ${isLight ? "bg-stone-200 text-stone-700" : "bg-stone-800 text-stone-300"} hover:opacity-80 rounded-2xl font-bold transition-all text-xs uppercase tracking-widest`}
                 >
-                  Recalibrate
+                  {t.playAgain}
                 </button>
               </div>
             </motion.div>

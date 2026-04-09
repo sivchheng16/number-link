@@ -758,8 +758,8 @@ export const LEVELS: Level[] = [
       {
         "value": 2,
         "start": {
-          "x":1,
-          "y":2
+          "x": 1,
+          "y": 2
         },
         "end": {
           "x": 4,
@@ -2507,7 +2507,7 @@ export const LEVELS: Level[] = [
           "y": 4
         },
         "end": {
-          "x": 3,
+          "x": 2,
           "y": 3
         },
         "color": "#a855f7"
@@ -3345,7 +3345,7 @@ export const LEVELS: Level[] = [
           "y": 4
         },
         "end": {
-          "x": 5,
+          "x": 4,
           "y": 2
         },
         "color": "#a855f7"
@@ -3420,7 +3420,7 @@ export const LEVELS: Level[] = [
       {
         "value": 4,
         "start": {
-          "x": 4,
+          "x": 3,
           "y": 3
         },
         "end": {
@@ -3444,8 +3444,8 @@ export const LEVELS: Level[] = [
       {
         "value": 6,
         "start": {
-          "x": 3,
-          "y": 4
+          "x": 4,
+          "y": 1
         },
         "end": {
           "x": 2,
@@ -3752,7 +3752,7 @@ export const LEVELS: Level[] = [
           "y": 3
         },
         "end": {
-          "x": 2,
+          "x": 1,
           "y": 5
         },
         "color": "#ef4444"
@@ -4528,7 +4528,7 @@ export const LEVELS: Level[] = [
           "y": 1
         },
         "end": {
-          "x": 1,
+          "x": 2,
           "y": 4
         },
         "color": "#a855f7"
@@ -4904,7 +4904,7 @@ export const LEVELS: Level[] = [
           "y": 2
         },
         "end": {
-          "x": 4,
+          "x": 5,
           "y": 5
         },
         "color": "#a855f7"
@@ -4960,7 +4960,7 @@ export const LEVELS: Level[] = [
         },
         "end": {
           "x": 5,
-          "y": 4
+          "y": 5
         },
         "color": "#ef4444"
       },
@@ -5312,7 +5312,7 @@ export const LEVELS: Level[] = [
       {
         "value": 5,
         "start": {
-          "x": 5,
+          "x": 6,
           "y": 2
         },
         "end": {
@@ -5728,7 +5728,7 @@ export const LEVELS: Level[] = [
           "y": 5
         },
         "end": {
-          "x": 4,
+          "x": 3,
           "y": 3
         },
         "color": "#a855f7"
@@ -6810,7 +6810,7 @@ export const LEVELS: Level[] = [
         "value": 1,
         "start": {
           "x": 8,
-          "y": 7
+          "y": 8
         },
         "end": {
           "x": 7,
@@ -6862,7 +6862,7 @@ export const LEVELS: Level[] = [
         },
         "end": {
           "x": 4,
-          "y": 6
+          "y": 7
         },
         "color": "#a855f7"
       },
@@ -6936,7 +6936,7 @@ export const LEVELS: Level[] = [
       {
         "value": 2,
         "start": {
-          "x": 1,
+          "x": 2,
           "y": 0
         },
         "end": {
@@ -7330,7 +7330,7 @@ export const LEVELS: Level[] = [
         "value": 6,
         "start": {
           "x": 8,
-          "y": 0
+          "y": 1
         },
         "end": {
           "x": 3,
@@ -7357,7 +7357,7 @@ export const LEVELS: Level[] = [
           "y": 3
         },
         "end": {
-          "x": 4,
+          "x": 3,
           "y": 7
         },
         "color": "#ec4899"
@@ -7802,7 +7802,7 @@ export const LEVELS: Level[] = [
         "value": 7,
         "start": {
           "x": 7,
-          "y": 2
+          "y": 3
         },
         "end": {
           "x": 5,
@@ -7885,7 +7885,7 @@ export const LEVELS: Level[] = [
         },
         "end": {
           "x": 6,
-          "y": 4
+          "y": 5
         },
         "color": "#eab308"
       },
@@ -8174,7 +8174,7 @@ export const LEVELS: Level[] = [
           "y": 3
         },
         "end": {
-          "x": 7,
+          "x": 8,
           "y": 0
         },
         "color": "#84cc16"
@@ -8286,7 +8286,7 @@ export const LEVELS: Level[] = [
         "value": 9,
         "start": {
           "x": 1,
-          "y": 3
+          "y": 2
         },
         "end": {
           "x": 0,
@@ -8574,8 +8574,8 @@ export const LEVELS: Level[] = [
           "y": 1
         },
         "end": {
-          "x": 1,
-          "y": 4
+          "x": 2,
+          "y": 6
         },
         "color": "#eab308"
       },
@@ -8734,7 +8734,7 @@ export const LEVELS: Level[] = [
         "value": 8,
         "start": {
           "x": 6,
-          "y": 5
+          "y": 6
         },
         "end": {
           "x": 8,
@@ -8931,8 +8931,8 @@ export const LEVELS: Level[] = [
           "y": 3
         },
         "end": {
-          "x": 5,
-          "y": 6
+          "x": 4,
+          "y": 7
         },
         "color": "#a855f7"
       },
@@ -9035,7 +9035,7 @@ export const LEVELS: Level[] = [
         },
         "end": {
           "x": 2,
-          "y": 2
+          "y": 3
         },
         "color": "#eab308"
       },

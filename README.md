@@ -1,21 +1,26 @@
 <div align="center">
-   <h1 className="text-5xl">Logic Link</h1>
-   <p>A premium Number Link puzzle experience</p>
+   <div style="background-color: white; display: inline-block; padding: 10px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;">
+      <img src="./public/favicon.png" width="80" height="80" alt="Link Number Logo" />
+   </div>
+   <h1 className="text-5xl">Link Number</h1>
+   <p>A premium logic puzzle experience for the KOOMPI App ecosystem.</p>
 </div>
 
-# Logic Link 
-Logic Link is a modern, interactive puzzle game built with React and TypeScript. It features a curated collection of handcrafted levels, a "Liquid Glass" design system, and dynamic scaling that ensures a perfect experience on any grid size.
+# Link Number 
+Link Number is a modern, interactive puzzle game built with React, TypeScript, and Framer Motion. It features a curated collection of handcrafted levels, a stunning "Liquid Glass" design system, seamless bilingual support, and dynamic scaling that ensures a perfect puzzle experience on any device.
 
 ---
 
 ## ✨ Core Features
 
+-   **Bilingual Support**: Fully playable in both English and Khmer.
 -   **Liquid Glass UI**: A premium, vibrant design system with smooth animations and glassmorphism.
--   **Handcrafted Levels**: 100+ curated levels ranging from 5x5 to 9x9 grids.
--   **Thinking Brain Logic**: Sophisticated level design where matching endpoints are strategically placed to maximize challenge.
--   **Dynamic Grid Scaling**: Intelligent layout system that automatically adjusts padding, node size, and stroke widths for 8x8 and 9x9 grids.
--   **Persistent Progress**: Automatically saves your current level and completed missions.
--   **Haptic Feedback**: Integrated vibration support for a tactile gameplay experience.
+-   **Handcrafted Levels**: 100+ curated levels ranging from simple grids to complex 9x9 challenges.
+-   **Intelligent Path Drawing**: Smart interpolation allows smooth line drawing and auto-clearing of incomplete paths for better gameplay flow.
+-   **Dynamic Grid Scaling**: Intelligent layout system that automatically adjusts padding, node size, and stroke widths for larger grid sizes.
+-   **Persistent Progress**: Automatically saves your current level, drawn lines, and completed missions via local storage.
+-   **Audio & Haptic Feedback**: Integrated sound effects and device vibration support for a tactile, responsive gameplay experience.
+-   **PWA Ready & SEO Optimized**: Configured mobile web app metadata for "add to home screen" support and Open Graph integrations.
 
 ---
 
@@ -43,7 +48,7 @@ Logic Link is a modern, interactive puzzle game built with React and TypeScript.
    npm run dev
    ```
 
-   The app will be available at `http://localhost:3000`
+   The app will be available at `http://localhost:3000` (or the port defined by Vite).
 
 ---
 
@@ -60,6 +65,8 @@ Logic Link is a modern, interactive puzzle game built with React and TypeScript.
 ## 🛠️ Tech Stack
 
 - **Frontend Framework:** React 18 with TypeScript
+- **Animations:** motion/react (Framer Motion)
+- **Icons:** lucide-react
 - **Build Tool:** Vite
 - **Package Manager:** npm
 
@@ -67,43 +74,21 @@ Logic Link is a modern, interactive puzzle game built with React and TypeScript.
 
 ## 📁 Project Structure
 
-```
+```text
 .
 ├── src/
-│   ├── App.tsx           # Main application component
-│   ├── main.tsx          # React DOM entry point
-│   └── components/       # React components
-├── public/               # Static assets
-├── index.html            # HTML entry point
+│   ├── App.tsx           # Main application engine & game logic
+│   ├── levels.ts         # Handcrafted puzzle configurations
+│   ├── types.ts          # TypeScript interfaces
+│   ├── themes.ts         # Unified color and "Liquid Glass" styles
+│   └── main.tsx          # React DOM entry point
+├── public/               # Static assets & Iconography
+├── index.html            # HTML entry point (SEO & PWA configured)
 ├── vite.config.ts        # Vite configuration
 ├── tsconfig.json         # TypeScript configuration
-├── .env.example          # Environment variables template
 ├── package.json          # Project dependencies
-└── README.md             # This file
+└── README.md             # This documentation file
 ```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env.local` file in the project root:
-
-**Never commit `.env.local` to version control.**
-
----
-
-## 🚀 Deployment
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-This generates a `dist/` directory with optimized production assets.
-
 
 ---
 
@@ -119,9 +104,7 @@ This generates a `dist/` directory with optimized production assets.
 
 ## 📚 Resources
 
-- [React Documentation](https://react.dev)
-- [Vite Documentation](https://vitejs.dev)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-
----
-
+- [React](https://react.dev)
+- [Vite](https://vitejs.dev)
+- [TypeScript](https://www.typescriptlang.org/docs/)
+- [Framer Motion](https://motion.dev/)
