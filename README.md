@@ -3,16 +3,17 @@
       <img src="./public/favicon.png" width="80" height="80" alt="Link Number Logo" />
    </div>
    <h1 className="text-5xl">Link Number</h1>
-   <p>A premium logic puzzle experience for the KOOMPI App ecosystem.</p>
+   <p>A premium offline-capable logic puzzle experience for the KOOMPI App ecosystem.</p>
 </div>
 
 # Link Number 
-Link Number is a modern, interactive puzzle game built with React, TypeScript, and Framer Motion. It features a curated collection of handcrafted levels, a stunning "Liquid Glass" design system, seamless bilingual support, and dynamic scaling that ensures a perfect puzzle experience on any device.
+Link Number is a modern, interactive puzzle game built with React, TypeScript, Framer Motion, and Electron. It features a curated collection of handcrafted levels, a stunning "Liquid Glass" design system, seamless bilingual support, and dynamic scaling that ensures a perfect puzzle experience on any device or as a standalone desktop application.
 
 ---
 
 ## ✨ Core Features
 
+-   **Offline Desktop Version**: Fully standalone Electron application for use in environments without internet access.
 -   **Bilingual Support**: Fully playable in both English and Khmer.
 -   **Liquid Glass UI**: A premium, vibrant design system with smooth animations and glassmorphism.
 -   **Handcrafted Levels**: 100+ curated levels ranging from simple grids to complex 9x9 challenges.
@@ -42,29 +43,32 @@ Link Number is a modern, interactive puzzle game built with React, TypeScript, a
 2. **Configure environment variables:**
    - Copy `.env.example` to `.env.local`
 
-3. **Start development server:**
+3. **Start development web server:**
 
    ```bash
    npm run dev
    ```
 
-   The app will be available at `http://localhost:3000` (or the port defined by Vite).
+   The app will be available at `http://localhost:3000`.
 
 ---
 
 ## 📦 Available Scripts
 
-| Command           | Purpose                                  |
-| ----------------- | ---------------------------------------- |
-| `npm run dev`     | Start development server with hot reload |
-| `npm run build`   | Build for production                     |
-| `npm run preview` | Preview production build locally         |
+| Command                  | Purpose                                                    |
+| ------------------------ | ---------------------------------------------------------- |
+| `npm run dev`            | Start the web development server with hot reload           |
+| `npm run build`          | Build the web application for production                   |
+| `npm run preview`        | Preview the production web build locally                   |
+| `npm run electron:dev`   | Start the game as an offline desktop application (Electron)|
+| `npm run electron:build` | Package the desktop app into a standalone AppImage (saves to `./download/`) |
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Frontend Framework:** React 18 with TypeScript
+- **Desktop Runtime:** Electron
 - **Animations:** motion/react (Framer Motion)
 - **Icons:** lucide-react
 - **Build Tool:** Vite
@@ -76,6 +80,8 @@ Link Number is a modern, interactive puzzle game built with React, TypeScript, a
 
 ```text
 .
+├── electron/             # Electron main process and configuration
+│   └── main.js           # Desktop window management & server
 ├── src/
 │   ├── App.tsx           # Main application engine & game logic
 │   ├── levels.ts         # Handcrafted puzzle configurations
@@ -83,6 +89,8 @@ Link Number is a modern, interactive puzzle game built with React, TypeScript, a
 │   ├── themes.ts         # Unified color and "Liquid Glass" styles
 │   └── main.tsx          # React DOM entry point
 ├── public/               # Static assets & Iconography
+├── dist/                 # Web builds (generated)
+├── download/             # Packaged desktop executables (generated)
 ├── index.html            # HTML entry point (SEO & PWA configured)
 ├── vite.config.ts        # Vite configuration
 ├── tsconfig.json         # TypeScript configuration

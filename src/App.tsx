@@ -26,7 +26,7 @@ import { Point, Path, Level, Pair } from "./types";
 import { THEMES } from "./themes";
 import { LevelMap } from "./LevelMap";
 import { div } from "motion/react-client";
-import logo from "../public/favicon.png"
+const logo = "./favicon.png";
 
 const TRANSLATIONS = {
   en: {
